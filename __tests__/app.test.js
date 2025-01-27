@@ -26,3 +26,28 @@ describe("GET /api", () => {
       });
   });
 });
+
+describe("GET /api/topics", () => {
+  test("should respond with an array of topic objects", () => {
+    return request(app)
+      .get("/api/topics")
+      .expect(200)
+      .then((response) => {
+        const body = response.body;
+        expect(body.topics.length).toBe(3);
+
+        body.topics.forEach((topic) => {
+          expect(typeof topic.description).toBe("string");
+          expect(typeof topic.slug).toBe("string");
+        });
+      });
+  });
+  test('should respond with 404 and a message of "Endpoint not found" ', () => {
+    return request(app)
+      .get("/api/NA")
+      .expect(404)
+      .then((response) => {
+        expect(response.body.error).toBe("Endpoint not found");
+      });
+  });
+});
