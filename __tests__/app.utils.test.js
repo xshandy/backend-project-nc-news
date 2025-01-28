@@ -19,7 +19,7 @@ describe("check User Exists", () => {
   });
   test("should reject if the category does not exist", () => {
     return expect(checkUserExists(100)).rejects.toMatchObject({
-      message: "username not found",
+      msg: "username not found",
       status: 404,
     });
   });
