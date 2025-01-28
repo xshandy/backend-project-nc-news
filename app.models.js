@@ -1,6 +1,4 @@
 const db = require("./db/connection");
-const articles = require("./db/data/test-data/articles");
-//const { convertTimestampToDate } = require("./db/seeds/utils");
 
 const fetchTopics = () => {
   const SQLString = `SELECT * FROM topics`;
@@ -54,4 +52,27 @@ const fetchArticleByArticleId = (id) => {
   });
 };
 
-module.exports = { fetchTopics, fetchArticleByArticleId, fetchArticles };
+const fetchCommentsByArticleId = (id) => {
+  let SQLString = `SELECT * FROM comments WHERE comments.article_id = $1`;
+  const args = [id];
+
+  const defaultSortBy = "created_at";
+  const defaultOrder = "desc";
+
+  SQLString += ` ORDER BY ${defaultSortBy} ${defaultOrder}`;
+
+  return db.query(SQLString, args).then(({ rows }) => {
+    if (rows.length === 0) {
+      return Promise.reject({ msg: "Not found" });
+    } else {
+      return rows;
+    }
+  });
+};
+
+module.exports = {
+  fetchTopics,
+  fetchArticleByArticleId,
+  fetchArticles,
+  fetchCommentsByArticleId,
+};

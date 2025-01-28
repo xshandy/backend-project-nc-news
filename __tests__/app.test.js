@@ -143,3 +143,51 @@ describe("GET /api/articles", () => {
       });
   });
 });
+describe("GET /api/articles/:article_id/comments", () => {
+  test("should respond with an array of comments for an article ", () => {
+    return request(app)
+      .get("/api/articles/3/comments")
+      .expect(200)
+      .then((response) => {
+        const body = response.body;
+        expect(body.comments.length).toBe(2);
+        body.comments.forEach((comment) => {
+          expect(typeof comment.comment_id).toBe("number");
+          expect(typeof comment.votes).toBe("number");
+          expect(typeof comment.created_at).toBe("string");
+          expect(typeof comment.author).toBe("string");
+          expect(typeof comment.body).toBe("string");
+          expect(typeof comment.article_id).toBe("number");
+        });
+      });
+  });
+  test("should be sorted by date in descending order", () => {
+    return request(app)
+      .get("/api/articles/3/comments")
+      .expect(200)
+      .then((response) => {
+        const body = response.body;
+        expect(body.comments).toBeSorted({
+          key: "created_at",
+          descending: true,
+        });
+      });
+  });
+  test("should send an 404 and error message when given a valid but non-existent id", () => {
+    return request(app)
+      .get("/api/articles/1000/comments")
+      .expect(404)
+      .then((response) => {
+        const body = response.body;
+        expect(body.msg).toBe("Not found");
+      });
+  });
+  test("should respond with an appropriate error message when given an invalid id", () => {
+    return request(app)
+      .get("/api/articles/abc/comments")
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("Bad Request");
+      });
+  });
+});
