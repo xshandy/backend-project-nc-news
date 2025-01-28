@@ -6,7 +6,10 @@ const {
   getArticlesByArticleId,
   getArticles,
   getCommentsByArticleId,
+  postComment,
 } = require("./app.controllers");
+
+app.use(express.json());
 
 app.get("/api", (request, response) => {
   response.status(200).send({ endpoints: endpointsJson });
@@ -20,23 +23,26 @@ app.get("/api/articles", getArticles);
 
 app.get("/api/articles/:article_id/comments", getCommentsByArticleId);
 
+app.post("/api/articles/:article_id/comments", postComment);
+
 app.all("*", (request, response) => {
   response.status(404).send({ error: "Endpoint not found" });
 });
 
 app.use((error, request, response, next) => {
-  if (error.code === "22P02") {
+  if (error.code === "22P02" || error.code === "23503") {
     response.status(400).send({ msg: "Bad Request" });
   } else next(error);
 });
 
 app.use((error, request, response, next) => {
-  if (error.msg === "Not found") {
+  if (error.msg === "Not found" || error.msg === "username not found") {
     response.status(404).send({ msg: "Not found" });
   } else next(error);
 });
 
 app.use((error, request, response, next) => {
+  console.log(error, "<-------- error - to be actioned");
   response.status(500).send({ msg: "Internal Server Error" });
 });
 
