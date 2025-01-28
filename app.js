@@ -1,7 +1,11 @@
 const express = require("express");
 const app = express();
 const endpointsJson = require("./endpoints.json");
-const { getAllTopics, getArticlesByArticleId } = require("./app.controllers");
+const {
+  getAllTopics,
+  getArticlesByArticleId,
+  getArticles,
+} = require("./app.controllers");
 
 app.get("/api", (request, response) => {
   response.status(200).send({ endpoints: endpointsJson });
@@ -10,6 +14,8 @@ app.get("/api", (request, response) => {
 app.get("/api/topics", getAllTopics);
 
 app.get("/api/articles/:article_id", getArticlesByArticleId);
+
+app.get("/api/articles", getArticles);
 
 app.all("*", (request, response) => {
   response.status(404).send({ error: "Endpoint not found" });
