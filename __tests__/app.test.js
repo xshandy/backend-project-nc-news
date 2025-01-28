@@ -191,3 +191,42 @@ describe("GET /api/articles/:article_id/comments", () => {
       });
   });
 });
+describe("POST /api/articles/:article_id/comments", () => {
+  test("should respond with the posted comment", () => {
+    return request(app)
+      .post("/api/articles/3/comments")
+      .send({
+        username: "lurker",
+        body: "How's everyone doing?",
+      })
+      .expect(201)
+      .then((response) => {
+        const body = response.body;
+        expect(body.comment.body).toBe("How's everyone doing?");
+      });
+  });
+  test("should send an 400 when given an invalid id ", () => {
+    return request(app)
+      .post("/api/articles/1000/comments")
+      .send({
+        username: "lurker",
+        body: "How's everyone doing?",
+      })
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("Bad Request");
+      });
+  });
+  test("should respond with an appropriate error message when user is invalid ", () => {
+    return request(app)
+      .post("/api/articles/3/comments")
+      .send({
+        username: "intruder",
+        body: "Boo",
+      })
+      .expect(404)
+      .then((response) => {
+        expect(response.body.msg).toBe("Not found");
+      });
+  });
+});

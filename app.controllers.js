@@ -3,7 +3,9 @@ const {
   fetchArticleByArticleId,
   fetchArticles,
   fetchCommentsByArticleId,
+  addComment,
 } = require("./app.models");
+const checkUserExists = require("./app.utils");
 
 const getAllTopics = (request, response) => {
   fetchTopics().then((topics) => {
@@ -44,9 +46,26 @@ const getCommentsByArticleId = (request, response, next) => {
     });
 };
 
+const postComment = (request, response, next) => {
+  const { username, body } = request.body;
+  const { article_id } = request.params;
+
+  checkUserExists(username)
+    .then(() => {
+      return addComment({ username, body }, article_id);
+    })
+    .then((comment) => {
+      response.status(201).send({ comment });
+    })
+    .catch((error) => {
+      next(error);
+    });
+};
+
 module.exports = {
   getAllTopics,
   getArticlesByArticleId,
   getArticles,
   getCommentsByArticleId,
+  postComment,
 };
