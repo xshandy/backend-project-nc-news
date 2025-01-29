@@ -6,6 +6,7 @@ const {
   addComment,
   updateArticleVotes,
   removeCommentById,
+  fetchUsers,
 } = require("./app.models");
 const { checkUserExists, checkArticleExists } = require("./app.utils");
 
@@ -93,6 +94,16 @@ const deleteCommentById = (request, response, next) => {
     });
 };
 
+const getUsers = (request, response, next) => {
+  fetchUsers()
+    .then((users) => {
+      response.status(200).send({ users });
+    })
+    .catch((error) => {
+      next(error);
+    });
+};
+
 module.exports = {
   getAllTopics,
   getArticlesByArticleId,
@@ -101,4 +112,5 @@ module.exports = {
   postComment,
   patchArticle,
   deleteCommentById,
+  getUsers,
 };
