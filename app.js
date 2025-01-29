@@ -43,13 +43,18 @@ app.use((error, request, response, next) => {
 });
 
 app.use((error, request, response, next) => {
+  if (error.msg === "Bad Request") {
+    response.status(400).send({ msg: "Bad Request" });
+  } else next(error);
+});
+
+app.use((error, request, response, next) => {
   if (error.msg === "Not found" || error.msg === "username not found") {
     response.status(404).send({ msg: "Not found" });
   } else next(error);
 });
 
 app.use((error, request, response, next) => {
-  console.log(error, "<-------- error - to be actioned");
   response.status(500).send({ msg: "Internal Server Error" });
 });
 

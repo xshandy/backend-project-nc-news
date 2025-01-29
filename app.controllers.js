@@ -50,13 +50,16 @@ const getCommentsByArticleId = (request, response, next) => {
 const postComment = (request, response, next) => {
   const { username, body } = request.body;
   const { article_id } = request.params;
+  if (!username || !body) {
+    return next({ msg: "Bad Request" });
+  }
 
   checkUserExists(username)
     .then(() => {
       return addComment({ username, body }, article_id);
     })
-    .then((comment) => {
-      response.status(201).send({ comment });
+    .then((postedComment) => {
+      response.status(201).send({ postedComment });
     })
     .catch((error) => {
       next(error);
