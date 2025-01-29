@@ -85,7 +85,7 @@ describe("GET /api/articles/:article_id", () => {
         expect(body).toBe("Bad Request");
       });
   });
-  test("should sends an 404 status and error message when given a valid but non-existent id ", () => {
+  test("should sends a 404 status and error message when given a valid but non-existent id ", () => {
     return request(app)
       .get("/api/articles/1000")
       .expect(404)
@@ -358,6 +358,29 @@ describe("GET /api/articles (sorting queries)", () => {
           key: "created_at",
           descending: true,
         });
+      });
+  });
+});
+
+describe("GET /api/articles (topic query)", () => {
+  test("should be able to filter articles by topic ", () => {
+    return request(app)
+      .get("/api/articles?topic=cats")
+      .expect(200)
+      .then((response) => {
+        const body = response.body;
+        expect(body.articles.length).toBe(1);
+        body.articles.forEach((article) => {
+          expect(article.topic).toBe("cats");
+        });
+      });
+  });
+  test("should send a 400 when given invalid query ", () => {
+    return request(app)
+      .get("/api/articles?topic=dogs")
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("Bad Request");
       });
   });
 });

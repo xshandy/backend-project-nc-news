@@ -1,4 +1,5 @@
 const db = require("./db/connection");
+const format = require("pg-format");
 
 const fetchTopics = () => {
   const SQLString = `SELECT * FROM topics`;
@@ -9,7 +10,7 @@ const fetchTopics = () => {
 };
 
 const fetchArticles = (queries) => {
-  const { sort_by, order } = queries;
+  const { sort_by, order, topic } = queries;
 
   const sortByGreenList = ["created_at"];
   const orderbyGreenList = ["desc", "asc"];
@@ -30,7 +31,17 @@ const fetchArticles = (queries) => {
 
   SQLString += ` ORDER BY ${validSortBy} ${validOrderBy}`;
 
-  return db.query(SQLString).then(({ rows }) => {
+  const topicGreenList = ["cats", "mitch", "paper"];
+
+  if (topic && !topicGreenList.includes(topic)) {
+    return Promise.reject({ msg: "Bad Request" });
+  }
+
+  if (topic) {
+    SQLString = `SELECT * FROM articles WHERE topic = $1`;
+  }
+
+  return db.query(SQLString, topic ? [topic] : []).then(({ rows }) => {
     const noBodyProp = rows.map((article) => {
       const { body, ...noBodyProp } = article;
       return noBodyProp;
