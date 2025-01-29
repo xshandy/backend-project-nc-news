@@ -5,6 +5,7 @@ const {
   fetchCommentsByArticleId,
   addComment,
   updateArticleVotes,
+  removeCommentById,
 } = require("./app.models");
 const { checkUserExists, checkArticleExists } = require("./app.utils");
 
@@ -81,6 +82,17 @@ const patchArticle = (request, response, next) => {
   });
 };
 
+const deleteCommentById = (request, response, next) => {
+  const { comment_id } = request.params;
+  removeCommentById(comment_id)
+    .then(() => {
+      response.status(204).send();
+    })
+    .catch((error) => {
+      next(error);
+    });
+};
+
 module.exports = {
   getAllTopics,
   getArticlesByArticleId,
@@ -88,4 +100,5 @@ module.exports = {
   getCommentsByArticleId,
   postComment,
   patchArticle,
+  deleteCommentById,
 };

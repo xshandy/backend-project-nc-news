@@ -173,7 +173,7 @@ describe("GET /api/articles/:article_id/comments", () => {
         });
       });
   });
-  test("should send an 404 and error message when given a valid but non-existent id", () => {
+  test("should send a 404 and error message when given a valid but non-existent id", () => {
     return request(app)
       .get("/api/articles/1000/comments")
       .expect(404)
@@ -205,7 +205,7 @@ describe("POST /api/articles/:article_id/comments", () => {
         expect(body.postedComment.body).toBe("How's everyone doing?");
       });
   });
-  test("should send an 400 when given an invalid id is a number ", () => {
+  test("should send a 400 when given an invalid id is a number ", () => {
     return request(app)
       .post("/api/articles/1000/comments")
       .send({
@@ -217,7 +217,7 @@ describe("POST /api/articles/:article_id/comments", () => {
         expect(response.body.msg).toBe("Bad Request");
       });
   });
-  test("should send an 400 when given an invalid id is a string ", () => {
+  test("should send a 400 when given an invalid id is a string ", () => {
     return request(app)
       .post("/api/articles/abc/comments")
       .send({
@@ -241,7 +241,7 @@ describe("POST /api/articles/:article_id/comments", () => {
         expect(response.body.msg).toBe("Not found");
       });
   });
-  test("should send an 400 when missing input - username", () => {
+  test("should send a 400 when missing input - username", () => {
     return request(app)
       .post("/api/articles/3/comments")
       .send({
@@ -252,7 +252,7 @@ describe("POST /api/articles/:article_id/comments", () => {
         expect(response.body.msg).toBe("Bad Request");
       });
   });
-  test("should send an 400 when missing input - body", () => {
+  test("should send a 400 when missing input - body", () => {
     return request(app)
       .post("/api/articles/3/comments")
       .send({
@@ -285,13 +285,34 @@ describe("PATCH /api/articles/:article_id", () => {
         expect(body.article.votes).toBe(50);
       });
   });
-  test("should send an 400 when given an invalid votes ", () => {
+  test("should send a 400 when given an invalid vote ", () => {
     return request(app)
       .patch("/api/articles/1")
       .send({ inc_votes: "abc" })
       .expect(400)
       .then((response) => {
         expect(response.body.msg).toBe("Bad Request");
+      });
+  });
+});
+describe("DELETE /api/comments/:comment_id", () => {
+  test("should delete the specified comment and send no content back  ", () => {
+    return request(app).delete("/api/comments/1").expect(204);
+  });
+  test("should send a 400 when given an invalid id  ", () => {
+    return request(app)
+      .delete("/api/comments/not-a-comment")
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("Bad Request");
+      });
+  });
+  test("should send a 404 when given a non-existent id", () => {
+    return request(app)
+      .delete("/api/comments/1000")
+      .expect(404)
+      .then((response) => {
+        expect(response.body.msg).toBe("Not found");
       });
   });
 });

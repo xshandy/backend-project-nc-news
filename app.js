@@ -8,6 +8,7 @@ const {
   getCommentsByArticleId,
   postComment,
   patchArticle,
+  deleteCommentById,
 } = require("./app.controllers");
 
 app.use(express.json());
@@ -27,6 +28,8 @@ app.get("/api/articles/:article_id/comments", getCommentsByArticleId);
 app.post("/api/articles/:article_id/comments", postComment);
 
 app.patch("/api/articles/:article_id", patchArticle);
+
+app.delete("/api/comments/:comment_id", deleteCommentById);
 
 app.all("*", (request, response) => {
   response.status(404).send({ error: "Endpoint not found" });
@@ -55,6 +58,7 @@ app.use((error, request, response, next) => {
 });
 
 app.use((error, request, response, next) => {
+  console.log(error, "<------ need to action");
   response.status(500).send({ msg: "Internal Server Error" });
 });
 
