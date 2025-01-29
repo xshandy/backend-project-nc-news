@@ -230,3 +230,34 @@ describe("POST /api/articles/:article_id/comments", () => {
       });
   });
 });
+describe.only("PATCH /api/articles/:article_id", () => {
+  test("should update, increment votes on an, article by article_id", () => {
+    return request(app)
+      .patch("/api/articles/1")
+      .send({ inc_votes: 10 })
+      .expect(200)
+      .then((response) => {
+        const body = response.body;
+        expect(body.article.votes).toBe(110);
+      });
+  });
+  test("should update, decrement votes on an, article by article_id  ", () => {
+    return request(app)
+      .patch("/api/articles/1")
+      .send({ inc_votes: -50 })
+      .expect(200)
+      .then((response) => {
+        const body = response.body;
+        expect(body.article.votes).toBe(50);
+      });
+  });
+  test("should send an 400 when given an invalid votes ", () => {
+    return request(app)
+      .patch("/api/articles/1")
+      .send({ inc_votes: "abc" })
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("Bad Request");
+      });
+  });
+});

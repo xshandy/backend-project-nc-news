@@ -4,8 +4,9 @@ const {
   fetchArticles,
   fetchCommentsByArticleId,
   addComment,
+  updateArticleVotes,
 } = require("./app.models");
-const checkUserExists = require("./app.utils");
+const { checkUserExists, checkArticleExists } = require("./app.utils");
 
 const getAllTopics = (request, response) => {
   fetchTopics().then((topics) => {
@@ -62,10 +63,26 @@ const postComment = (request, response, next) => {
     });
 };
 
+const patchArticle = (request, response, next) => {
+  const { article_id } = request.params;
+  const { inc_votes } = request.body;
+
+  checkArticleExists(article_id).then(() => {
+    return updateArticleVotes({ inc_votes }, article_id)
+      .then((article) => {
+        response.status(200).send({ article });
+      })
+      .catch((error) => {
+        next(error);
+      });
+  });
+};
+
 module.exports = {
   getAllTopics,
   getArticlesByArticleId,
   getArticles,
   getCommentsByArticleId,
   postComment,
+  patchArticle,
 };
