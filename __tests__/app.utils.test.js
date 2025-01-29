@@ -17,7 +17,7 @@ describe("check if User Exists", () => {
       "username exists"
     );
   });
-  test("should reject if the category does not exist", () => {
+  test("should reject if the user does not exist", () => {
     return expect(checkUserExists(100)).rejects.toMatchObject({
       msg: "username not found",
       status: 404,

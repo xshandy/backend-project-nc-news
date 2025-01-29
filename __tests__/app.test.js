@@ -202,12 +202,24 @@ describe("POST /api/articles/:article_id/comments", () => {
       .expect(201)
       .then((response) => {
         const body = response.body;
-        expect(body.comment.body).toBe("How's everyone doing?");
+        expect(body.postedComment.body).toBe("How's everyone doing?");
       });
   });
-  test("should send an 400 when given an invalid id ", () => {
+  test("should send an 400 when given an invalid id is a number ", () => {
     return request(app)
       .post("/api/articles/1000/comments")
+      .send({
+        username: "lurker",
+        body: "How's everyone doing?",
+      })
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("Bad Request");
+      });
+  });
+  test("should send an 400 when given an invalid id is a string ", () => {
+    return request(app)
+      .post("/api/articles/abc/comments")
       .send({
         username: "lurker",
         body: "How's everyone doing?",
@@ -229,8 +241,30 @@ describe("POST /api/articles/:article_id/comments", () => {
         expect(response.body.msg).toBe("Not found");
       });
   });
+  test("should send an 400 when missing input - username", () => {
+    return request(app)
+      .post("/api/articles/3/comments")
+      .send({
+        body: "Boo",
+      })
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("Bad Request");
+      });
+  });
+  test("should send an 400 when missing input - body", () => {
+    return request(app)
+      .post("/api/articles/3/comments")
+      .send({
+        username: "intruder",
+      })
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("Bad Request");
+      });
+  });
 });
-describe.only("PATCH /api/articles/:article_id", () => {
+describe("PATCH /api/articles/:article_id", () => {
   test("should update, increment votes on an, article by article_id", () => {
     return request(app)
       .patch("/api/articles/1")
