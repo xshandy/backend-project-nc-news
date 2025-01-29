@@ -91,6 +91,18 @@ const updateArticleVotes = (articleVotes, id) => {
   });
 };
 
+const removeCommentById = (comment_id) => {
+  const SQLString = `DELETE FROM comments WHERE comment_id = $1 RETURNING *`;
+  const args = [comment_id];
+
+  return db.query(SQLString, args).then((result) => {
+    if (result.rowCount === 0) {
+      return Promise.reject({ status: 404, msg: "Not found" });
+    }
+    return result;
+  });
+};
+
 module.exports = {
   fetchTopics,
   fetchArticleByArticleId,
@@ -98,4 +110,5 @@ module.exports = {
   fetchCommentsByArticleId,
   addComment,
   updateArticleVotes,
+  removeCommentById,
 };
