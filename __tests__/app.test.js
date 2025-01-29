@@ -334,3 +334,30 @@ describe("GET /api/users", () => {
       });
   });
 });
+
+describe("GET /api/articles (sorting queries)", () => {
+  test("should be sorted by date in ascending order", () => {
+    return request(app)
+      .get("/api/articles?&sort_by=created_at&order=asc")
+      .expect(200)
+      .then((response) => {
+        const body = response.body;
+        expect(body.articles).toBeSorted({
+          key: "created_at",
+          descending: false,
+        });
+      });
+  });
+  test("should use default queries even if queries are invalid", () => {
+    return request(app)
+      .get("/api/articles?&sort_by=HELLO&order=ABC")
+      .expect(200)
+      .then((response) => {
+        const body = response.body;
+        expect(body.articles).toBeSorted({
+          key: "created_at",
+          descending: true,
+        });
+      });
+  });
+});
