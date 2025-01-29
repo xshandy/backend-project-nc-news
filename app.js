@@ -7,6 +7,7 @@ const {
   getArticles,
   getCommentsByArticleId,
   postComment,
+  patchArticle,
 } = require("./app.controllers");
 
 app.use(express.json());
@@ -25,12 +26,18 @@ app.get("/api/articles/:article_id/comments", getCommentsByArticleId);
 
 app.post("/api/articles/:article_id/comments", postComment);
 
+app.patch("/api/articles/:article_id", patchArticle);
+
 app.all("*", (request, response) => {
   response.status(404).send({ error: "Endpoint not found" });
 });
 
 app.use((error, request, response, next) => {
-  if (error.code === "22P02" || error.code === "23503") {
+  if (
+    error.code === "22P02" ||
+    error.code === "23503" ||
+    error.code === "42703"
+  ) {
     response.status(400).send({ msg: "Bad Request" });
   } else next(error);
 });

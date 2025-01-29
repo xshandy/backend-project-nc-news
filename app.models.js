@@ -79,10 +79,23 @@ const addComment = (newComment, id) => {
   });
 };
 
+const updateArticleVotes = (articleVotes, id) => {
+  const votes = articleVotes.inc_votes;
+  const SQLString = `UPDATE articles
+  SET votes = votes + ${votes}
+  WHERE article_id = ${id}
+  RETURNING *`;
+  console.log(SQLString, "<------ SQL");
+  return db.query(SQLString).then(({ rows }) => {
+    return rows[0];
+  });
+};
+
 module.exports = {
   fetchTopics,
   fetchArticleByArticleId,
   fetchArticles,
   fetchCommentsByArticleId,
   addComment,
+  updateArticleVotes,
 };
