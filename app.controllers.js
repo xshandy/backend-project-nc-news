@@ -72,15 +72,27 @@ const patchArticle = (request, response, next) => {
   const { article_id } = request.params;
   const { inc_votes } = request.body;
 
-  checkArticleExists(article_id).then(() => {
-    return updateArticleVotes({ inc_votes }, article_id)
-      .then((article) => {
-        response.status(200).send({ article });
-      })
-      .catch((error) => {
-        next(error);
-      });
-  });
+  if (/[^0-9]/.test(article_id)) {
+    return next({ msg: "Bad Request" });
+  }
+
+  // checkArticleExists(article_id).then(() => {
+  //   return updateArticleVotes({ inc_votes }, article_id)
+  //     .then((article) => {
+  //       response.status(200).send({ article });
+  //     })
+  //     .catch((error) => {
+  //       next(error);
+  //     });
+  // });
+
+  updateArticleVotes({ inc_votes }, article_id)
+    .then((article) => {
+      response.status(200).send({ article });
+    })
+    .catch((error) => {
+      next(error);
+    });
 };
 
 const deleteCommentById = (request, response, next) => {

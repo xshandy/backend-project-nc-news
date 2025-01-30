@@ -91,7 +91,6 @@ const addComment = (newComment, id) => {
   const { username, body } = newComment;
   let SQLString = `INSERT INTO comments (body, author, article_id) VALUES ($1, $2, $3) RETURNING *`;
   const args = [body, username, id];
-
   return db.query(SQLString, args).then(({ rows }) => {
     return rows[0];
   });
@@ -104,6 +103,9 @@ const updateArticleVotes = (articleVotes, id) => {
   WHERE article_id = ${id}
   RETURNING *`;
   return db.query(SQLString).then(({ rows }) => {
+    if (rows.length === 0) {
+      return Promise.reject({ msg: "Not found" });
+    }
     return rows[0];
   });
 };

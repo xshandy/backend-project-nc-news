@@ -55,7 +55,11 @@ app.use((error, request, response, next) => {
 });
 
 app.use((error, request, response, next) => {
-  if (error.msg === "Not found" || error.msg === "username not found") {
+  if (
+    error.msg === "Not found" ||
+    error.msg === "username not found" ||
+    error.msg === "article not found"
+  ) {
     response.status(404).send({ msg: "Not found" });
   } else next(error);
 });

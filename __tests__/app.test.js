@@ -295,6 +295,24 @@ describe("PATCH /api/articles/:article_id", () => {
         expect(response.body.msg).toBe("Bad Request");
       });
   });
+  test("should send a 404 when given a non-existent article_id", () => {
+    return request(app)
+      .patch("/api/articles/1000")
+      .send({ inc_votes: 10 })
+      .expect(404)
+      .then((response) => {
+        expect(response.body.msg).toBe("Not found");
+      });
+  });
+  test("should send a 400 when given an invalid article_id", () => {
+    return request(app)
+      .patch("/api/articles/not-an-id")
+      .send({ inc_votes: 10 })
+      .expect(400)
+      .then((response) => {
+        expect(response.body.msg).toBe("Bad Request");
+      });
+  });
 });
 describe("DELETE /api/comments/:comment_id", () => {
   test("should delete the specified comment and send no content back  ", () => {
