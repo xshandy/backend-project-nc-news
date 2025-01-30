@@ -76,16 +76,6 @@ const patchArticle = (request, response, next) => {
     return next({ msg: "Bad Request" });
   }
 
-  // checkArticleExists(article_id).then(() => {
-  //   return updateArticleVotes({ inc_votes }, article_id)
-  //     .then((article) => {
-  //       response.status(200).send({ article });
-  //     })
-  //     .catch((error) => {
-  //       next(error);
-  //     });
-  // });
-
   updateArticleVotes({ inc_votes }, article_id)
     .then((article) => {
       response.status(200).send({ article });

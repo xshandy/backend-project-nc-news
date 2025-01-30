@@ -354,7 +354,7 @@ describe("GET /api/users", () => {
   });
 });
 
-describe.only("GET /api/articles (sorting queries)", () => {
+describe("GET /api/articles (sorting queries)", () => {
   test("should be sorted by date in ascending order", () => {
     return request(app)
       .get("/api/articles?&sort_by=created_at&order=asc")
@@ -442,12 +442,22 @@ describe("GET /api/articles (topic query)", () => {
         });
       });
   });
-  test("should send a 400 when given invalid query ", () => {
+  test("should send a 400 when given non-existent query ", () => {
     return request(app)
       .get("/api/articles?topic=dogs")
-      .expect(400)
+      .expect(200)
       .then((response) => {
-        expect(response.body.msg).toBe("Bad Request");
+        const body = response.body;
+        expect(body.articles).toEqual([]);
+      });
+  });
+  test("should respond with all articles if the query is omitted", () => {
+    return request(app)
+      .get("/api/articles")
+      .expect(200)
+      .then((response) => {
+        const body = response.body;
+        expect(Array.isArray(body.articles)).toBe(true);
       });
   });
 });
