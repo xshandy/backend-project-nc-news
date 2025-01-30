@@ -1,5 +1,4 @@
 const db = require("./db/connection");
-const format = require("pg-format");
 
 const fetchTopics = () => {
   const SQLString = `SELECT * FROM topics`;
@@ -12,7 +11,13 @@ const fetchTopics = () => {
 const fetchArticles = (queries) => {
   const { sort_by, order, topic } = queries;
 
-  const sortByGreenList = ["created_at"];
+  const sortByGreenList = [
+    "created_at",
+    "title",
+    "author",
+    "topic",
+    "article_id",
+  ];
   const orderbyGreenList = ["desc", "asc"];
 
   const defaultSortBy = "created_at";
@@ -31,22 +36,23 @@ const fetchArticles = (queries) => {
 
   SQLString += ` ORDER BY ${validSortBy} ${validOrderBy}`;
 
-  const topicGreenList = ["cats", "mitch", "paper"];
+  return fetchTopics().then((validTopics) => {
+    const validTopicArray = validTopics.map((topic) => topic.slug);
+    if (topic && !validTopicArray.includes(topic)) {
+      return Promise.resolve([]);
+    }
 
-  if (topic && !topicGreenList.includes(topic)) {
-    return Promise.reject({ msg: "Bad Request" });
-  }
+    if (topic) {
+      SQLString = `SELECT * FROM articles WHERE topic = $1`;
+    }
 
-  if (topic) {
-    SQLString = `SELECT * FROM articles WHERE topic = $1`;
-  }
-
-  return db.query(SQLString, topic ? [topic] : []).then(({ rows }) => {
-    const noBodyProp = rows.map((article) => {
-      const { body, ...noBodyProp } = article;
+    return db.query(SQLString, topic ? [topic] : []).then(({ rows }) => {
+      const noBodyProp = rows.map((article) => {
+        const { body, ...noBodyProp } = article;
+        return noBodyProp;
+      });
       return noBodyProp;
     });
-    return noBodyProp;
   });
 };
 

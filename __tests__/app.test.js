@@ -379,6 +379,54 @@ describe("GET /api/articles (sorting queries)", () => {
         });
       });
   });
+  test("should be sorted by article_id in ascending order", () => {
+    return request(app)
+      .get("/api/articles?&sort_by=article_id&order=asc")
+      .expect(200)
+      .then((response) => {
+        const body = response.body;
+        expect(body.articles).toBeSorted({
+          key: "article_id",
+          ascending: true,
+        });
+      });
+  });
+  test("should be sorted by title in ascending order", () => {
+    return request(app)
+      .get("/api/articles?&sort_by=title&order=asc")
+      .expect(200)
+      .then((response) => {
+        const body = response.body;
+        expect(body.articles).toBeSorted({
+          key: "title",
+          ascending: true,
+        });
+      });
+  });
+  test("should be sorted by author in ascending order", () => {
+    return request(app)
+      .get("/api/articles?&sort_by=author&order=asc")
+      .expect(200)
+      .then((response) => {
+        const body = response.body;
+        expect(body.articles).toBeSorted({
+          key: "author",
+          ascending: true,
+        });
+      });
+  });
+  test("should be sorted by topic in ascending order", () => {
+    return request(app)
+      .get("/api/articles?&sort_by=topic&order=desc")
+      .expect(200)
+      .then((response) => {
+        const body = response.body;
+        expect(body.articles).toBeSorted({
+          key: "topic",
+          descending: true,
+        });
+      });
+  });
 });
 
 describe("GET /api/articles (topic query)", () => {
@@ -394,12 +442,22 @@ describe("GET /api/articles (topic query)", () => {
         });
       });
   });
-  test("should send a 400 when given invalid query ", () => {
+  test("should send a 400 when given non-existent query ", () => {
     return request(app)
       .get("/api/articles?topic=dogs")
-      .expect(400)
+      .expect(200)
       .then((response) => {
-        expect(response.body.msg).toBe("Bad Request");
+        const body = response.body;
+        expect(body.articles).toEqual([]);
+      });
+  });
+  test("should respond with all articles if the query is omitted", () => {
+    return request(app)
+      .get("/api/articles")
+      .expect(200)
+      .then((response) => {
+        const body = response.body;
+        expect(Array.isArray(body.articles)).toBe(true);
       });
   });
 });
