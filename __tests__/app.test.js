@@ -354,7 +354,7 @@ describe("GET /api/users", () => {
   });
 });
 
-describe("GET /api/articles (sorting queries)", () => {
+describe.only("GET /api/articles (sorting queries)", () => {
   test("should be sorted by date in ascending order", () => {
     return request(app)
       .get("/api/articles?&sort_by=created_at&order=asc")
@@ -375,6 +375,54 @@ describe("GET /api/articles (sorting queries)", () => {
         const body = response.body;
         expect(body.articles).toBeSorted({
           key: "created_at",
+          descending: true,
+        });
+      });
+  });
+  test("should be sorted by article_id in ascending order", () => {
+    return request(app)
+      .get("/api/articles?&sort_by=article_id&order=asc")
+      .expect(200)
+      .then((response) => {
+        const body = response.body;
+        expect(body.articles).toBeSorted({
+          key: "article_id",
+          ascending: true,
+        });
+      });
+  });
+  test("should be sorted by title in ascending order", () => {
+    return request(app)
+      .get("/api/articles?&sort_by=title&order=asc")
+      .expect(200)
+      .then((response) => {
+        const body = response.body;
+        expect(body.articles).toBeSorted({
+          key: "title",
+          ascending: true,
+        });
+      });
+  });
+  test("should be sorted by author in ascending order", () => {
+    return request(app)
+      .get("/api/articles?&sort_by=author&order=asc")
+      .expect(200)
+      .then((response) => {
+        const body = response.body;
+        expect(body.articles).toBeSorted({
+          key: "author",
+          ascending: true,
+        });
+      });
+  });
+  test("should be sorted by topic in ascending order", () => {
+    return request(app)
+      .get("/api/articles?&sort_by=topic&order=desc")
+      .expect(200)
+      .then((response) => {
+        const body = response.body;
+        expect(body.articles).toBeSorted({
+          key: "topic",
           descending: true,
         });
       });

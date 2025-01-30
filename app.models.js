@@ -12,7 +12,13 @@ const fetchTopics = () => {
 const fetchArticles = (queries) => {
   const { sort_by, order, topic } = queries;
 
-  const sortByGreenList = ["created_at"];
+  const sortByGreenList = [
+    "created_at",
+    "title",
+    "author",
+    "topic",
+    "article_id",
+  ];
   const orderbyGreenList = ["desc", "asc"];
 
   const defaultSortBy = "created_at";
