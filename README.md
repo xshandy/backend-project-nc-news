@@ -38,7 +38,7 @@ To run the tests, enter "npm test"
 
 --Information about how to create the two .env.files--
 
-To ensure access to the necessary environment variables, you will need to add two files .env.development and .env.test. Insides those files you will need to add "PGDATABASE= NAME_OF_DATABASE" to connect to the database locally.
+To ensure access to the necessary environment variables, you will need to add two files .env.development and .env.test. Inside .env.development you will need to add "PGDATABASE=nc_news" and inside .env.test you will need to add "PGDATABASE=nc_news_test", to connect to the database locally.
 
 --Minimum versions--
 
