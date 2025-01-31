@@ -17,42 +17,45 @@ const fetchArticles = (queries) => {
     "author",
     "topic",
     "article_id",
+    "votes",
+    "comment_count",
   ];
   const orderbyGreenList = ["desc", "asc"];
 
   const defaultSortBy = "created_at";
   const defaultOrder = "desc";
 
-  let SQLString = `SELECT articles.*, COUNT(comments.article_id) AS comment_count 
-  FROM articles 
-  LEFT JOIN comments 
-  ON articles.article_id = comments.article_id
-  GROUP BY articles.article_id`;
-
   const validSortBy = sortByGreenList.includes(sort_by)
     ? sort_by
     : defaultSortBy;
   const validOrderBy = orderbyGreenList.includes(order) ? order : defaultOrder;
 
-  SQLString += ` ORDER BY ${validSortBy} ${validOrderBy}`;
+  let SQLString;
 
-  return fetchTopics().then((validTopics) => {
-    const validTopicArray = validTopics.map((topic) => topic.slug);
-    if (topic && !validTopicArray.includes(topic)) {
-      return Promise.resolve([]);
-    }
+  const args = [];
 
-    if (topic) {
-      SQLString = `SELECT * FROM articles WHERE topic = $1`;
-    }
+  if (topic) {
+    SQLString = `
+      SELECT * FROM articles
+      WHERE topic = $1
+      ORDER BY ${validSortBy} ${validOrderBy}
+    `;
+    args.push(topic);
+  } else {
+    SQLString = `SELECT articles.*, COUNT(comments.article_id) AS comment_count 
+  FROM articles 
+  LEFT JOIN comments 
+  ON articles.article_id = comments.article_id
+  GROUP BY articles.article_id
+  ORDER BY ${validSortBy} ${validOrderBy}`;
+  }
 
-    return db.query(SQLString, topic ? [topic] : []).then(({ rows }) => {
-      const noBodyProp = rows.map((article) => {
-        const { body, ...noBodyProp } = article;
-        return noBodyProp;
-      });
+  return db.query(SQLString, args).then(({ rows }) => {
+    const noBodyProp = rows.map((article) => {
+      const { body, ...noBodyProp } = article;
       return noBodyProp;
     });
+    return noBodyProp;
   });
 };
 

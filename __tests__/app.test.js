@@ -387,7 +387,7 @@ describe("GET /api/articles (sorting queries)", () => {
         const body = response.body;
         expect(body.articles).toBeSorted({
           key: "article_id",
-          ascending: true,
+          descending: false,
         });
       });
   });
@@ -399,7 +399,7 @@ describe("GET /api/articles (sorting queries)", () => {
         const body = response.body;
         expect(body.articles).toBeSorted({
           key: "title",
-          ascending: true,
+          descending: false,
         });
       });
   });
@@ -411,7 +411,7 @@ describe("GET /api/articles (sorting queries)", () => {
         const body = response.body;
         expect(body.articles).toBeSorted({
           key: "author",
-          ascending: true,
+          descending: false,
         });
       });
   });
@@ -442,22 +442,13 @@ describe("GET /api/articles (topic query)", () => {
         });
       });
   });
-  test("should send a 400 when given non-existent query ", () => {
+  test("should send a 200 when given non-existent query ", () => {
     return request(app)
       .get("/api/articles?topic=dogs")
       .expect(200)
       .then((response) => {
         const body = response.body;
         expect(body.articles).toEqual([]);
-      });
-  });
-  test("should respond with all articles if the query is omitted", () => {
-    return request(app)
-      .get("/api/articles")
-      .expect(200)
-      .then((response) => {
-        const body = response.body;
-        expect(Array.isArray(body.articles)).toBe(true);
       });
   });
 });

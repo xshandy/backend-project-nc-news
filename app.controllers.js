@@ -8,7 +8,7 @@ const {
   removeCommentById,
   fetchUsers,
 } = require("./app.models");
-const { checkUserExists, checkArticleExists } = require("./app.utils");
+const { checkUserExists, checkTopicExists } = require("./app.utils");
 
 const getAllTopics = (request, response) => {
   fetchTopics().then((topics) => {
@@ -29,13 +29,30 @@ const getArticlesByArticleId = (request, response, next) => {
 
 const getArticles = (request, response, next) => {
   const query = request.query;
-  fetchArticles(query)
-    .then((articles) => {
-      response.status(200).send({ articles });
-    })
-    .catch((error) => {
-      next(error);
-    });
+  const { topic } = query;
+
+  if (topic) {
+    checkTopicExists(topic)
+      .then(() => {
+        return fetchArticles(query);
+      })
+      .then((articles) => {
+        response.status(200).send({ articles });
+      })
+      .catch((error) => {
+        if (error.status === 404) {
+          response.status(200).send({ articles: [] });
+        } else {
+          next(error);
+        }
+      });
+  } else {
+    fetchArticles(query)
+      .then((articles) => {
+        response.status(200).send({ articles });
+      })
+      .catch(next);
+  }
 };
 
 const getCommentsByArticleId = (request, response, next) => {
